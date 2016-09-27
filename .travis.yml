@@ -4,3 +4,7 @@ node_js:
     - "6"
     - "5"
 sudo: false
+
+before_script:
+  # Compile CoffeeScript files to .js so they could be run
+  - coffee -c test src

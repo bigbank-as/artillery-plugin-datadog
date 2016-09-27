@@ -42,6 +42,10 @@ class DatadogPlugin
     return 0 if isNaN(percentage)
     Math.round(percentage*100)/100
 
+  # This runs on artillery 'stats' event, when load test results are available.
+  # It can be run 1...n times. Upon running, extract metrics, format them and
+  # add to Datadog queue (but do not send them yet).
+  # Metrics are flushed to Datadog by 'flushStats'.
   addStats: (statsObject) =>
 
     stats = statsObject.report()
