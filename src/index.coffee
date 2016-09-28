@@ -17,7 +17,6 @@ class DatadogPlugin
     @ee.on 'stats', @addStats
     @ee.on 'done', @flushStats
 
-  # Return a dictionary of Datadog config options
   getDatadogConfig: ->
     flushIntervalSeconds: 0
     host: @config.plugins.datadog.host || ''
@@ -26,12 +25,10 @@ class DatadogPlugin
   # Return a list of Datadog tags for all metrics
   # Example: ['target: google.com', 'team:sre']
   getTags: ->
-    # Tag all metrics with a set of default tags
-    # as well as user-defined ones from the config file
-    artilleryTags = [
+    tags = [
       "target:#{@config.target}"
     ]
-    artilleryTags.concat @config.plugins.datadog.tags
+    tags.concat @config.plugins.datadog.tags
 
   # Calculate the % value of successful vs failed responses
   # The lower the return value, the more requests failed (HTTP 5xx)
@@ -45,7 +42,6 @@ class DatadogPlugin
   # This runs on artillery 'stats' event, when load test results are available.
   # It can be run 1...n times. Upon running, extract metrics, format them and
   # add to Datadog queue (but do not send them yet).
-  # Metrics are flushed to Datadog by 'flushStats'.
   addStats: (statsObject) =>
 
     stats = statsObject.report()
@@ -59,20 +55,16 @@ class DatadogPlugin
       'response.4xx': 0
       'response.5xx': 0
 
-    # Extract each response status count into a separate metric
-    # and group each status group (2xx) into an aggregate count
     for code, count of stats.codes
       metrics["response.#{code[0]}xx"] += count
       metrics["response.#{code}"] = count
 
     metrics['response.ok_pct'] = @getOkPercentage metrics
 
-    # Pass metrics to Datadog
     tags = @getTags()
     for name, value of metrics
       datadog.gauge name, value, tags
 
-  # Manually flush Datadog metric queue
   flushStats: (statsObject) ->
     datadog.flush ->
       debug 'Flushed metrics to Datadog'
