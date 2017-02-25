@@ -58,6 +58,11 @@ The following metrics are collected from Artillery and sent to Datadog.
 - **artillery.response.5xx**: Aggregate count of all responses whose HTTP code was in the `5xx` range
 - **artillery.response.200**: Count of responses whose HTTP code was `200` (exactly). Similarly named metric is repeated for each response status code
 - **artillery.response.ok_pct**: Percentage (in the range `0 - 100`) of responses that returned with a `2xx` or `3xx` status code
+- **artillery.latency.min**: Min latency
+- **artillery.latency.max**: Max latency
+- **artillery.latency.p99**: 99th percentile latency
+- **artillery.latency.p95**: 95th percentile latency
+- **artillery.latency.median**: Median latency
 
 ## Development
 

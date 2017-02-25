@@ -59,6 +59,9 @@ class DatadogPlugin
       metrics["response.#{code[0]}xx"] += count
       metrics["response.#{code}"] = count
 
+    for type,value of stats.latency
+      metrics["latency.#{type}"]=value
+
     metrics['response.ok_pct'] = @getOkPercentage metrics
 
     tags = @getTags()
