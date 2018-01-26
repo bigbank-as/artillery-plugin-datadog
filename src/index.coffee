@@ -18,7 +18,6 @@ class DatadogPlugin
     @ee.on 'done', @flushStats
 
   getDatadogConfig: ->
-    # flushIntervalSeconds: 0
     host: @config.plugins.datadog.host || ''
     prefix: @config.plugins.datadog.prefix || 'artillery.'
 

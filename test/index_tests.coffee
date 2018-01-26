@@ -36,7 +36,6 @@ describe '#getDatadogConfig', ->
           prefix: 'artillery.platoon.'
 
     expect(datadogPlugin.getDatadogConfig()).to.deep.equal
-      # flushIntervalSeconds: 0
       host: 'artillery.local'
       prefix: 'artillery.platoon.'
 
