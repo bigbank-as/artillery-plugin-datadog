@@ -1,4 +1,5 @@
 chai = require 'chai'
+datadog = require 'datadog-metrics'
 expect = chai.expect
 EventEmitter = require 'events'
 
@@ -23,7 +24,7 @@ describe '#getDatadogConfig', ->
 
   it 'should return default config when user did not override anything', ->
     expect(datadogPlugin.getDatadogConfig()).to.deep.equal
-      flushIntervalSeconds: 0
+      # flushIntervalSeconds: 0
       host: ''
       prefix: 'artillery.'
 
@@ -35,7 +36,7 @@ describe '#getDatadogConfig', ->
           prefix: 'artillery.platoon.'
 
     expect(datadogPlugin.getDatadogConfig()).to.deep.equal
-      flushIntervalSeconds: 0
+      # flushIntervalSeconds: 0
       host: 'artillery.local'
       prefix: 'artillery.platoon.'
 
@@ -56,15 +57,15 @@ describe '#getTags', ->
 describe '#getOkPercentage', ->
   it 'should return 0 when no queries were made', ->
     metrics =
-      'response.2xx': 0
-      'response.3xx': 0
-      'scenarios.completed': 0
+      'response.2xx': [0, datadog.increment]
+      'response.3xx': [0, datadog.increment]
+      'requests.completed': [0, datadog.increment]
     expect(datadogPlugin.getOkPercentage(metrics)).to.equal(0)
 
   it 'should return a correct percentage value based on response code counts', ->
     metrics =
-      'response.2xx': 8
-      'response.3xx': 3
-      'scenarios.completed': 101
+      'response.2xx': [8, datadog.increment]
+      'response.3xx': [3, datadog.increment]
+      'requests.completed': [101, datadog.increment]
     expect(datadogPlugin.getOkPercentage(metrics)).to.be.a('Number').and.to.equal(10.89)
 

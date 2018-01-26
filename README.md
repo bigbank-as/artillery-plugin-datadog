@@ -51,6 +51,7 @@ The following metrics are collected from Artillery and sent to Datadog.
 
 - **artillery.scenarios.created**: Number of scenarios created
 - **artillery.scenarios.completed**: Number of scenarios completed
+- **artillery.requests.pending**: Number of HTTP requests pending
 - **artillery.requests.completed**: Number of HTTP requests completed
 - **artillery.response.2xx**: Aggregate count of all responses whose HTTP code was in the `2xx` range
 - **artillery.response.3xx**: Aggregate count of all responses whose HTTP code was in the `3xx` range
@@ -63,6 +64,12 @@ The following metrics are collected from Artillery and sent to Datadog.
 - **artillery.latency.p99**: 99th percentile latency
 - **artillery.latency.p95**: 95th percentile latency
 - **artillery.latency.median**: Median latency
+- **artillery.scenarioDuration.min**: Min scenario duration 
+- **artillery.scenarioDuration.max**: Max scenario duration
+- **artillery.scenarioDuration.median**: Median scenario duration
+- **artillery.scenarioDuration.p95**: 95th percentile scenario duration
+- **artillery.scenarioDuration.p99**: 99th percentile scenario duration
+- **artillery.rps.mean**: Average number of requests per second
 
 ## Development
 

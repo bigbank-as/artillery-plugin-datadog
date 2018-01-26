@@ -1,7 +1,7 @@
 # Report Artillery results to Datadog
 #
 # License: Apache-2.0
-
+"use strict"
 datadog = require 'datadog-metrics'
 debug = require('debug')('plugin:datadog')
 
@@ -18,7 +18,7 @@ class DatadogPlugin
     @ee.on 'done', @flushStats
 
   getDatadogConfig: ->
-    flushIntervalSeconds: 0
+    # flushIntervalSeconds: 0
     host: @config.plugins.datadog.host || ''
     prefix: @config.plugins.datadog.prefix || 'artillery.'
 
@@ -34,8 +34,8 @@ class DatadogPlugin
   # The lower the return value, the more requests failed (HTTP 5xx)
   # Treat redirects as OK
   getOkPercentage: (metrics) ->
-    percentage = (metrics['response.2xx'] + metrics['response.3xx']) * 100 \
-     / metrics['scenarios.completed']
+    percentage = (metrics['response.2xx'][0] + metrics['response.3xx'][0]) \
+     * 100 / metrics['requests.completed'][0]
     return 0 if isNaN(percentage)
     Math.round(percentage*100)/100
 
@@ -47,26 +47,32 @@ class DatadogPlugin
     stats = statsObject.report()
 
     metrics =
-      'scenarios.created': stats.scenariosCreated
-      'scenarios.completed': stats.scenariosCompleted
-      'requests.completed': stats.requestsCompleted
-      'response.2xx': 0
-      'response.3xx': 0
-      'response.4xx': 0
-      'response.5xx': 0
+      'scenarios.created': [stats.scenariosCreated, datadog.increment]
+      'scenarios.completed': [stats.scenariosCompleted, datadog.increment]
+      'requests.completed': [stats.requestsCompleted, datadog.increment]
+      'requests.pending': [stats.pendingRequests, datadog.increment]
+      'response.2xx': [0, datadog.increment]
+      'response.3xx': [0, datadog.increment]
+      'response.4xx': [0, datadog.increment]
+      'response.5xx': [0, datadog.increment]
+      'rps.mean': [stats.rps.mean, datadog.gauge]
 
     for code, count of stats.codes
-      metrics["response.#{code[0]}xx"] += count
-      metrics["response.#{code}"] = count
+      metrics["response.#{code[0]}xx"][0] += count
+      metrics["response.#{code}"] = [count, datadog.increment]
 
-    for type,value of stats.latency
-      metrics["latency.#{type}"]=value
+    for type, value of stats.latency
+      metrics["latency.#{type}"] = [value, datadog.gauge]
 
-    metrics['response.ok_pct'] = @getOkPercentage metrics
+    for type, value of stats.scenarioDuration
+      metrics["scenarioDuration.#{type}"] = [value, datadog.gauge]
+
+    metrics['response.ok_pct'] = [@getOkPercentage(metrics), datadog.gauge]
 
     tags = @getTags()
     for name, value of metrics
-      datadog.gauge name, value, tags
+      value[1](name, value[0], tags)
+
 
   flushStats: (statsObject) ->
     datadog.flush ->

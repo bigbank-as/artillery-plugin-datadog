@@ -1,6 +1,6 @@
 {
   "name": "artillery-plugin-datadog",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Datadog output plugin for Artillery",
   "main": "src/index.js",
   "keywords": [
@@ -12,7 +12,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "debug": "2.2.0",
-    "datadog-metrics": "^0.3.0"
+    "datadog-metrics": "^0.8.1"
   },
   "scripts": {
     "test": "./node_modules/.bin/mocha --reporter spec && coffeelint src/"
